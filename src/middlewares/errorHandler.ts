@@ -27,6 +27,10 @@ const errorHandler = (
       res.json({ title: "Not found", message: err.message });
       break;
 
+    case constants.UNPROCESSABLE_ENTITY:
+      res.json({ title: "Cannot be proccessed", message: err.message });
+      break;
+
     case constants.SERVER_ERROR:
       res.json({ title: "Server error", message: err.message });
       break;
