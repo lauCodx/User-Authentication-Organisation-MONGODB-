@@ -5,5 +5,5 @@ export interface userInterface {
     password: string;
     confirmPassword:string;
     phone: string;
-    role: string;
+    role: 'user' | 'admin'
 }

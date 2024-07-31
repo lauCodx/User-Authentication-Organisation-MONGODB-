@@ -3,6 +3,7 @@ import User from "../models/user.model";
 import bcrypt from "bcryptjs"
 import { createUser } from "../service/user.service";
 import { userInterface } from "../interfaces/user.interface";
+import { createNewOrg } from "../service/org.service";
 
 export const registerUser = async (req: Request, res: Response, next:NextFunction) => {
     try {
@@ -10,7 +11,7 @@ export const registerUser = async (req: Request, res: Response, next:NextFunctio
 
     console.log(body.password)
 
-    const { firstName, lastName, email,  password, confirmPassword, phone} = body;
+    const { firstName, lastName, email,  password, confirmPassword, phone, role} = body;
 
 
     if (!body){
@@ -34,7 +35,21 @@ export const registerUser = async (req: Request, res: Response, next:NextFunctio
 
     const hashPassword = await bcrypt.hash(password, 10)
 
-    const user = await createUser({...body, password:hashPassword});
+    const user = await createUser({...body, password:hashPassword, role:role});
+
+    const orgName = `${firstName}'s Organisation`;
+
+    const userOrg = await createNewOrg({
+        name: orgName,
+        description: "This is the first organisation",
+        userId: user.id
+    })
+
+    if (userOrg){
+        console.log('User Organisation was created successfully')
+    }else{
+        console.log("Error creating User Organisation")
+    }
 
     if (user){
         res.status(201).json({
@@ -46,7 +61,8 @@ export const registerUser = async (req: Request, res: Response, next:NextFunctio
                     firstName: user.firstName,
                     lastName: user.lastName,
                     email: user.email,
-                    phone: user.phone
+                    phone: user.phone,
+                    role: user.role
                 }
             }
         })
