@@ -8,5 +8,5 @@ const port = Number (process.env.PORT  || 5000)
 DbConnect()
 
 app.listen(port, ()=>{
-    console.log("App listening on Port", port)
+    console.log("App listening on Port:", port)
 })
