@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import User from "../models/user.model";
 import bcrypt from "bcryptjs"
 import { createUser } from "../service/user.service";
-import { userInterface } from "../interfaces/user.interface";
+import { URequest, userInterface } from "../interfaces/user.interface";
 import { createNewOrg } from "../service/org.service";
 import jwt from "jsonwebtoken"
 
@@ -120,10 +120,14 @@ export const loginUser = async (req:Request, res:Response, next:NextFunction) =>
       });
     }else{
         res.status(401);
-        throw new Error("Login unsuccessful!"); 
+        throw new Error("Login unsuccessful, password incorrect!"); 
     }
     
    } catch (error) {
     next(error)
    }
+}
+
+export const checkAuth = async (req:URequest, res:Response) =>{
+    res.status(200).json(req.user)
 }
