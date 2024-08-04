@@ -5,6 +5,7 @@ import { createUser } from "../service/user.service";
 import { URequest, userInterface } from "../interfaces/user.interface";
 import { createNewOrg } from "../service/org.service";
 import jwt from "jsonwebtoken"
+import organisation from "../models/org.model"
 
 
 export const registerUser = async (req: Request, res: Response, next:NextFunction) => {
@@ -43,7 +44,7 @@ export const registerUser = async (req: Request, res: Response, next:NextFunctio
 
     const userOrg = await createNewOrg({
         name: orgName,
-        description: "This is a self auto user organisation",
+        description: "This is a self auto created user organisation",
         userId: user.id
     })
 
@@ -120,7 +121,7 @@ export const loginUser = async (req:Request, res:Response, next:NextFunction) =>
       });
     }else{
         res.status(401);
-        throw new Error("Login unsuccessful, password incorrect!"); 
+        throw new Error("Unsuccessful login, password incorrect!"); 
     }
     
    } catch (error) {
@@ -130,4 +131,32 @@ export const loginUser = async (req:Request, res:Response, next:NextFunction) =>
 
 export const checkAuth = async (req:URequest, res:Response) =>{
     res.status(200).json(req.user)
+};
+
+// Get a user
+export const getUser = async (req: URequest, res: Response, next:NextFunction) =>{
+    const userId = req.user?.id
+    const {id} = req.params
+
+
+    try {
+
+        // Checks if ID matches
+        if (userId === id) {
+            const user = await User.find({userId});
+            if (!user){
+                res.status(404)
+                throw new Error("User not found")
+            };
+        };
+
+        const organisations = await organisation.find({users: userId}).populate('users')
+
+        console.log(organisations)
+        // const isUserInOrganisation = organisations.some(org => org.userId?  id)
+    
+        
+    } catch (error) {
+        next(error)
+    }
 }

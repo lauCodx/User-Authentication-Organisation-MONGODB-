@@ -3,6 +3,7 @@ import DbConnect from "./config/db.config";
 import errorHandler from "./middlewares/errorHandler";
 require("dotenv").config();
 import userRoute from "./routers/user.route"
+import singleUser from "./routers/singleUser.route"
 import cors from "cors"
 import bodyParser from "body-parser"
 
@@ -16,6 +17,7 @@ app.use(bodyParser.json())
 app.use(express.json())
 
 app.use("/auth", userRoute )
+app.use("/api/user", singleUser)
 
 
 app.listen(port, () => {
