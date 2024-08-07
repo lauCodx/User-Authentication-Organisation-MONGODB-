@@ -5,7 +5,9 @@ import { createUser } from "../service/user.service";
 import { URequest, userInterface } from "../interfaces/user.interface";
 import { createNewOrg } from "../service/org.service";
 import jwt from "jsonwebtoken"
-import organisation from "../models/org.model"
+import Organisation from "../models/org.model";
+import { ObjectId } from "mongodb";
+
 
 
 export const registerUser = async (req: Request, res: Response, next:NextFunction) => {
@@ -99,7 +101,7 @@ export const loginUser = async (req:Request, res:Response, next:NextFunction) =>
 
     if (user && (await bcrypt.compare(password, user.password as string))){
         const token = jwt.sign({
-            id:user.id,
+            _id:user.id,
             email: user.email
         },
         process.env.ACCESS_KEY as string,
@@ -125,19 +127,19 @@ export const loginUser = async (req:Request, res:Response, next:NextFunction) =>
     }
     
    } catch (error) {
-    next(error)
+        next(error)
    }
 }
 
+// Check Route 
 export const checkAuth = async (req:URequest, res:Response) =>{
-    res.status(200).json(req.user)
+    res.status(200).json(req.user?._id)
 };
 
 // Get a user
 export const getUser = async (req: URequest, res: Response, next:NextFunction) =>{
-    const userId = req.user?.id
+    const userId = req.user?._id
     const {id} = req.params
-
 
     try {
 
@@ -148,14 +150,42 @@ export const getUser = async (req: URequest, res: Response, next:NextFunction) =
                 res.status(404)
                 throw new Error("User not found")
             };
-        };
 
-        const organisations = await organisation.find({users: userId}).populate('users')
+             // 
+            const organisations = await Organisation.find({userId}).populate('userId')
 
-        console.log(organisations)
-        // const isUserInOrganisation = organisations.some(org => org.userId?  id)
-    
+            console.log(organisations)
+            res.status(200).json(organisations)
+
+        }else{
+            res.status(401);
+            throw new Error("Not authorized")
+        }
+
+       
+            
         
+    } catch (error) {
+        next(error)
+    }
+}
+
+
+export const getAllOrg =  async (req: URequest, res: Response, next:NextFunction) =>{
+    try {
+        const userId = req.user?._id;
+
+        const getOrganisation = await Organisation.find({userId})
+
+        if (getOrganisation){
+            res.status(200).json({
+                status: "success",
+                message: "Organisation fetched successfully",
+                organisations: {
+                    data:getOrganisation
+                }
+            })
+        }
     } catch (error) {
         next(error)
     }

@@ -6,6 +6,7 @@ import userRoute from "./routers/user.route"
 import singleUser from "./routers/singleUser.route"
 import cors from "cors"
 import bodyParser from "body-parser"
+import orgRoute from "./routers/org.router"
 
 const app = express();
 const port = Number(process.env.PORT || 5000);
@@ -18,6 +19,7 @@ app.use(express.json())
 
 app.use("/auth", userRoute )
 app.use("/api/user", singleUser)
+app.use("/api", orgRoute)
 
 
 app.listen(port, () => {

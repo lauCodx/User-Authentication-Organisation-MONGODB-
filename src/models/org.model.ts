@@ -3,10 +3,10 @@ import mongoose from "mongoose";
 const orgSchema = new mongoose.Schema({
     name: String,
     description: String,
-    userId:{
+    userId:[{
         type: mongoose.Schema.Types.ObjectId,
         ref: "User"
-    }
+    }]
 },
 {
     timestamps: true

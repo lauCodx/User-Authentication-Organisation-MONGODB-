@@ -20,7 +20,7 @@ export const validateToken = async (req:URequest, res:Response, next:NextFunctio
 
     const decoded: userInterface | any = jwt.verify(token, process.env.ACCESS_KEY as string)
     
-    const user = await User.findById(decoded.id );
+    const user = await User.findById(decoded._id );
     if(!user){
         res.status(400);
         throw new Error("User not found, authorization denied")
