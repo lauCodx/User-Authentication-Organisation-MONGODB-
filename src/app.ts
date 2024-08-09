@@ -19,7 +19,7 @@ app.use(express.json())
 
 app.use("/auth", userRoute )
 app.use("/api/user", singleUser)
-app.use("/api", orgRoute)
+app.use("/api/organisations", orgRoute)
 
 
 app.listen(port, () => {

@@ -83,7 +83,7 @@ export const registerUser = async (req: Request, res: Response, next:NextFunctio
    }
 };
 
-
+// 
 export const loginUser = async (req:Request, res:Response, next:NextFunction) =>{
    try {
     const {email, password} = req.body;
@@ -145,25 +145,38 @@ export const getUser = async (req: URequest, res: Response, next:NextFunction) =
 
         // Checks if ID matches
         if (userId === id) {
-            const user = await User.find({userId});
+             // 
+            const organisations = await Organisation.find({userId}).populate('userId');
+
+            const userInOrg = organisations.some(org =>org.userId.some((users : any) =>users.id === id))
+
+            if (!userInOrg) {
+                res.status(403);
+                throw new Error("Access denied!")
+            };
+
+            const user = await User.findById(id);
             if (!user){
                 res.status(404)
                 throw new Error("User not found")
             };
 
-             // 
-            const organisations = await Organisation.find({userId}).populate('userId')
-
-            console.log(organisations)
-            res.status(200).json(organisations)
+            res.status(200).json({
+                status: "success",
+                message: "User retrieved successfully",
+                data: {
+                    userId: user.id,
+                    firstName: user.firstName,
+                    lastNmae: user.lastName,
+                    email: user.email,
+                    phone: user.phone,
+                }
+            })
 
         }else{
             res.status(401);
             throw new Error("Not authorized")
-        }
-
-       
-            
+        }        
         
     } catch (error) {
         next(error)
@@ -171,22 +184,3 @@ export const getUser = async (req: URequest, res: Response, next:NextFunction) =
 }
 
 
-export const getAllOrg =  async (req: URequest, res: Response, next:NextFunction) =>{
-    try {
-        const userId = req.user?._id;
-
-        const getOrganisation = await Organisation.find({userId})
-
-        if (getOrganisation){
-            res.status(200).json({
-                status: "success",
-                message: "Organisation fetched successfully",
-                organisations: {
-                    data:getOrganisation
-                }
-            })
-        }
-    } catch (error) {
-        next(error)
-    }
-}

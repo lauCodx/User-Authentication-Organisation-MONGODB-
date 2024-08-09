@@ -1,6 +1,8 @@
+import mongoose from "mongoose";
+
 export interface orgInterface {
     
     name: string;
     description: string;
-    userId: string;
+    userId: mongoose.Types.ObjectId[];
 }
